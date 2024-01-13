@@ -10,6 +10,11 @@
 **/[Ll]ogs/
 **/[Uu]ser[Ss]ettings/
 
+# Cloud Code Deploys
+**/[Ee]xtract[Cc]loud/module-compilation/
+**/[Ee]xtract[Cc]loud/[Pp]roject/bin/
+**/[Ee]xtract[Cc]loud/[Pp]roject/[Pp]roperties/
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 **/[Mm]emoryCaptures/
@@ -57,6 +62,7 @@ ExportedObj/
 *.pidb.meta
 *.pdb.meta
 *.mdb.meta
+*.ccmr.meta
 
 # Unity3D generated file on crash reports
 sysinfo.txt

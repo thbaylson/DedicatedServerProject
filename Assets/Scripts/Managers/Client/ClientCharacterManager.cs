@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
+using Unity.Services.CloudCode;
 using Unity.Services.Core;
 using UnityEngine;
 
@@ -39,6 +41,14 @@ public class ClientCharacterManager : MonoBehaviour
 
     public async Task CreateCharacter(string characterName, string className)
     {
+        var result = await CloudCodeService.Instance.CallModuleEndpointAsync("ExtractCloud", "SayHello",
+            new Dictionary<string, object>
+            {
+                {"name", characterName }
+            });
+
+        Debug.Log(result);
+
         var request = new CreateRequest
         {
             CharacterName = characterName,
