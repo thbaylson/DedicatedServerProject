@@ -47,14 +47,18 @@ public class ClientCharacterManager : MonoBehaviour
             ClassName = className
         };
 
+        Debug.Log("Sending CreateRequest");
         var result = await CloudCodeService.Instance.CallModuleEndpointAsync<CreateResult>("ExtractCloud", "CreateCharacter",
             new Dictionary<string, object>
             {
                 {"request", request }
             });
 
-        Debug.Log(result);
-        Debug.Log($"Got Result: {result.Success}; {result.Message}; {result.Data.PlayerId}; {result.Data.Name}; {result.Data.Class}; {result.Data.Experience}");
+        Debug.Log($"Received CreateResult: {result.Success}; {result.Message}");
+        if (result.Success)
+        {
+            Debug.Log($"Player: {result.Data.PlayerId}, {result.Data.Name}, {result.Data.Class}, {result.Data.Experience}");
+        }
     }
 }
 

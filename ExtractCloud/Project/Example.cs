@@ -1,6 +1,10 @@
+using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using Unity.Services.CloudCode.Apis;
 using Unity.Services.CloudCode.Core;
+using Unity.Services.CloudSave.Model;
 using Unity.Services.Lobby.Model;
 
 namespace HelloWorld;
@@ -13,21 +17,55 @@ public class MyModule
         return $"Hello, {name}! You're a {className}!";
     }
 
+    // IExecutionContext is being injected from somewhere else. The parameter name has to be exact for it to work (gross)!
+    // IGameApiClient is the same as above. Injection is defined in part at this bottom of this script (for some reason).
     [CloudCodeFunction("CreateCharacter")]
-    public async Task<CreateResult> CreateCharacter(IExecutionContext ctx, CreateRequest request)
+    public async Task<CreateResult> CreateCharacter(IExecutionContext ctx, IGameApiClient gameApiClient, CreateRequest request)
     {
-        return new CreateResult()
+        // Make sure the character doesn't already exist before we create a new one.
+        bool characterExists = await DoesCharacterExist(ctx, gameApiClient, request);
+        if (characterExists)
         {
-            Data = new PersistedCharacterData()
-            {
-                PlayerId = ctx.PlayerId,
-                Name = request.CharacterName,
-                Class = request.ClassName,
-                Experience = 99
-            },
-            Message = "We didn't really do anything",
-            Success = true
+            return new CreateResult() { Success = false, Message = $"CharacterName {request.CharacterName} already exists." };
+        }
+
+        // Now we know the character doesn't already exist, so we can continue with creation logic.
+        var persistedCharacterData = new PersistedCharacterData()
+        {
+            PlayerId = ctx.PlayerId,
+            Name = request.CharacterName,
+            Class = request.ClassName,
+            Experience = 1
         };
+
+        // This SetItemBody object is how we set data in cloud code.
+        // CharacterName is being used as a DB key here. Shouldn't we be using Id?
+        SetItemBody setItemBody = new SetItemBody(persistedCharacterData.Name, persistedCharacterData);
+        
+        // Protected in this context means it can only be set by the server (CloudCode).
+        var response = await gameApiClient.CloudSaveData.SetProtectedItemAsync(
+            ctx, ctx.ServiceToken, ctx.ProjectId, ctx.PlayerId, setItemBody);
+
+        if(response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            return new CreateResult() { Data = persistedCharacterData, Success = true };
+        }
+        else
+        {
+            return new CreateResult() { Data = persistedCharacterData, Success = false, Message = response.StatusCode.ToString() };
+        }
+    }
+
+    /// <summary>
+    /// Checks if CloudSaveData contains the given request's character name.
+    /// </summary>
+    /// <returns>True if any such characters with the given request name exist.</returns>
+    private async Task<bool> DoesCharacterExist(IExecutionContext ctx, IGameApiClient gameApiClient, CreateRequest request)
+    {
+        var existingCharacter = await gameApiClient.CloudSaveData.GetProtectedItemsAsync(
+            ctx, ctx.ServiceToken, ctx.ProjectId, ctx.PlayerId, new List<string>() { request.CharacterName });
+
+        return existingCharacter.Data.Results.Count > 0;
     }
 }
 
@@ -54,4 +92,13 @@ public class PersistedCharacterData
     public string Name;
     public string Class;
     public long Experience;
+}
+
+// Ayo? A little bit of DI happening down here!
+public class ModuleConfig : ICloudCodeSetup
+{
+    public void Setup(ICloudCodeConfig config)
+    {
+        config.Dependencies.AddSingleton(GameApiClient.Create());
+    }
 }

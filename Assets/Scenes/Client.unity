@@ -150,7 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _createRequest:
     CharacterName: Ty
-    ClassName: Mage
+    ClassName: Dev
 --- !u!4 &175475469
 Transform:
   m_ObjectHideFlags: 0
