@@ -41,20 +41,20 @@ public class ClientCharacterManager : MonoBehaviour
 
     public async Task CreateCharacter(string characterName, string className)
     {
-        var result = await CloudCodeService.Instance.CallModuleEndpointAsync("ExtractCloud", "SayHello",
-            new Dictionary<string, object>
-            {
-                {"name", characterName }
-            });
-
-        Debug.Log(result);
-
         var request = new CreateRequest
         {
             CharacterName = characterName,
             ClassName = className
         };
-        Debug.Log($"Sending Request {request.CharacterName} {request.ClassName}");
+
+        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<CreateResult>("ExtractCloud", "CreateCharacter",
+            new Dictionary<string, object>
+            {
+                {"request", request }
+            });
+
+        Debug.Log(result);
+        Debug.Log($"Got Result: {result.Success}; {result.Message}; {result.Data.PlayerId}; {result.Data.Name}; {result.Data.Class}; {result.Data.Experience}");
     }
 }
 
@@ -70,6 +70,6 @@ public class CreateRequest
 public class CreateResult
 {
     public PersistedCharacterData Data;
-    public bool Success;
     public string Message;
+    public bool Success;
 }
