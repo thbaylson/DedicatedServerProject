@@ -10,6 +10,9 @@ public class ClientCharacterManager : MonoBehaviour
 {
     [SerializeField] CreateRequest _createRequest;
     public List<PersistedCharacterData> PersistedCharacterDatas;
+    public static ClientCharacterManager Instance { get; private set; }
+
+    void Awake() => Instance = this;
 
     async void Start()
     {
@@ -33,6 +36,9 @@ public class ClientCharacterManager : MonoBehaviour
         }
 
         PersistedCharacterDatas = await LoadAllCharactersOnClient();
+        
+        // Refresh the UI element. This logic will be moved in the future
+        FindFirstObjectByType<UICharacterSelectPanel>().Bind(PersistedCharacterDatas);
     }
 
     // This adds custom functionality to the context menu of this component within the editor
@@ -75,6 +81,27 @@ public class ClientCharacterManager : MonoBehaviour
             "LoadAllCharactersOnClient");
 
         return result;
+    }
+
+    public async void DeleteCharacter(string characterName)
+    {
+        // Delete the character from CloudCode
+        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<bool>(
+            "ExtractCloud",
+            "DeleteCharacter",
+            new Dictionary<string, object>
+            {
+                {"characterName", characterName }
+            });
+
+        // If the character was successfully deleted, remove them from the list
+        if (result)
+        {
+            PersistedCharacterDatas.Remove(PersistedCharacterDatas.Find(character => character.Name == characterName));
+        }
+
+        // Refresh the UI element. This logic will be moved in the future
+        FindFirstObjectByType<UICharacterSelectPanel>().Bind(PersistedCharacterDatas);
     }
 }
 
