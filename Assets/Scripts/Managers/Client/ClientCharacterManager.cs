@@ -70,6 +70,9 @@ public class ClientCharacterManager : MonoBehaviour
         {
             PersistedCharacterDatas.Add(result.Data);
             Debug.Log($"Player: {result.Data.PlayerId}, {result.Data.Name}, {result.Data.Class}, {result.Data.Experience}");
+
+            // Refresh the UI element. This logic will be moved in the future
+            FindFirstObjectByType<UICharacterSelectPanel>().Bind(PersistedCharacterDatas);
         }
     }
 

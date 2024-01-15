@@ -23,11 +23,16 @@ public class MyModule
     [CloudCodeFunction("CreateCharacter")]
     public async Task<CreateResult> CreateCharacter(IExecutionContext ctx, IGameApiClient gameApiClient, CreateRequest request)
     {
-        // Make sure the character doesn't already exist before we create a new one.
-        bool characterExists = await DoesCharacterExist(ctx, gameApiClient, request);
-        if (characterExists)
+        // Check to make sure the player is logged in
+        if (string.IsNullOrWhiteSpace(ctx.PlayerId))
         {
-            return new CreateResult() { Success = false, Message = $"CharacterName {request.CharacterName} already exists." };
+            throw new Exception("Only a logged in player can create a character.");
+        }
+
+        // Make sure the character doesn't already exist before we create a new one.
+        if (await DoesCharacterExist(ctx, gameApiClient, request.CharacterName))
+        {
+            return new CreateResult() { Success = false, Message = $"CharacterName '{request.CharacterName}' already exists." };
         }
 
         // Now we know the character doesn't already exist, so we can continue with creation logic.
@@ -74,6 +79,28 @@ public class MyModule
         return characters;
     }
 
+    [CloudCodeFunction("DeleteCharacter")]
+    public async Task<bool> DeleteCharacter(IExecutionContext ctx, IGameApiClient gameApiClient, string characterName)
+    {
+        // Check to make sure the player is logged in
+        if (string.IsNullOrWhiteSpace(ctx.PlayerId))
+        {
+            throw new Exception("Only a logged in player can delete a character.");
+        }
+
+        // Check to make sure the given character exists
+        if(!await DoesCharacterExist(ctx, gameApiClient, characterName))
+        {
+            throw new Exception($"CharacterName '{characterName}' not found.");
+        }
+
+        // Attempt to delete the character
+        var deleteResult = await gameApiClient.CloudSaveData.DeleteProtectedItemAsync(
+            ctx, ctx.ServiceToken, characterName, ctx.ProjectId, ctx.PlayerId);
+
+        return deleteResult.StatusCode == System.Net.HttpStatusCode.OK;
+    }
+
     /// <summary>
     /// Gets character data for a given character's name.
     /// </summary>
@@ -94,10 +121,10 @@ public class MyModule
     /// Checks if CloudSaveData contains the given request's character name.
     /// </summary>
     /// <returns>True if any such characters with the given request name exist.</returns>
-    private async Task<bool> DoesCharacterExist(IExecutionContext ctx, IGameApiClient gameApiClient, CreateRequest request)
+    private async Task<bool> DoesCharacterExist(IExecutionContext ctx, IGameApiClient gameApiClient, string characterName)
     {
         var existingCharacter = await gameApiClient.CloudSaveData.GetProtectedItemsAsync(
-            ctx, ctx.ServiceToken, ctx.ProjectId, ctx.PlayerId, new List<string>() { request.CharacterName });
+            ctx, ctx.ServiceToken, ctx.ProjectId, ctx.PlayerId, new List<string>() { characterName });
 
         return existingCharacter.Data.Results.Count > 0;
     }
