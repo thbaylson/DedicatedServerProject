@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -54,6 +55,39 @@ public class MyModule
         {
             return new CreateResult() { Data = persistedCharacterData, Success = false, Message = response.StatusCode.ToString() };
         }
+    }
+
+    [CloudCodeFunction("LoadAllCharactersOnClient")]
+    public async Task<List<PersistedCharacterData>> LoadAllCharactersOnClient(IExecutionContext ctx, IGameApiClient gameApiClient)
+    {
+        // Gets all of the keys
+        var names = await gameApiClient.CloudSaveData.GetProtectedKeysAsync(
+            ctx, ctx.ServiceToken, ctx.ProjectId, ctx.PlayerId);
+
+        // For each key, get all of the data and add it to the list
+        List<PersistedCharacterData> characters = new();
+        foreach(var characterName in names.Data.Results)
+        {
+            characters.Add(await LoadCharacterForClientPlayer(ctx, gameApiClient, characterName.Key));
+        }
+
+        return characters;
+    }
+
+    /// <summary>
+    /// Gets character data for a given character's name.
+    /// </summary>
+    /// <returns>PersistedCharacterData object from GameApiClient.CloudSaveData.</returns>
+    private async Task<PersistedCharacterData> LoadCharacterForClientPlayer(IExecutionContext ctx, IGameApiClient gameApiClient, string characterName)
+    {
+        var getItemsResponse = await gameApiClient.CloudSaveData.GetProtectedItemsAsync(
+            ctx, ctx.ServiceToken, ctx.ProjectId, ctx.PlayerId, new List<string>() { characterName });
+
+        // Items are stored as json serialized strings
+        string json = getItemsResponse.Data.Results[0].Value.ToString();
+        var persistedCharacterData = JsonConvert.DeserializeObject<PersistedCharacterData>(json);
+
+        return persistedCharacterData;
     }
 
     /// <summary>

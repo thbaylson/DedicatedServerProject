@@ -9,6 +9,7 @@ using UnityEngine;
 public class ClientCharacterManager : MonoBehaviour
 {
     [SerializeField] CreateRequest _createRequest;
+    public List<PersistedCharacterData> PersistedCharacterDatas;
 
     async void Start()
     {
@@ -30,6 +31,8 @@ public class ClientCharacterManager : MonoBehaviour
         {
             Debug.Log("Failed to login");
         }
+
+        PersistedCharacterDatas = await LoadAllCharactersOnClient();
     }
 
     // This adds custom functionality to the context menu of this component within the editor
@@ -48,7 +51,9 @@ public class ClientCharacterManager : MonoBehaviour
         };
 
         Debug.Log("Sending CreateRequest");
-        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<CreateResult>("ExtractCloud", "CreateCharacter",
+        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<CreateResult>(
+            "ExtractCloud",
+            "CreateCharacter",
             new Dictionary<string, object>
             {
                 {"request", request }
@@ -57,8 +62,19 @@ public class ClientCharacterManager : MonoBehaviour
         Debug.Log($"Received CreateResult: {result.Success}; {result.Message}");
         if (result.Success)
         {
+            PersistedCharacterDatas.Add(result.Data);
             Debug.Log($"Player: {result.Data.PlayerId}, {result.Data.Name}, {result.Data.Class}, {result.Data.Experience}");
         }
+    }
+
+    public async Task<List<PersistedCharacterData>> LoadAllCharactersOnClient()
+    {
+        var playerId = AuthenticationService.Instance.PlayerId;
+        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<List<PersistedCharacterData>>(
+            "ExtractCloud",
+            "LoadAllCharactersOnClient");
+
+        return result;
     }
 }
 
