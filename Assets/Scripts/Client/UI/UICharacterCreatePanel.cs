@@ -11,6 +11,6 @@ public class UICharacterCreatePanel : MonoBehaviour
 
     async void CreateCharacter()
     {
-        await ClientCharacterManager.Instance.CreateCharacter(_nameInputField.text, "Warrior");
+        await ClientCharacterManager.Instance.CreateCharacter(_nameInputField.text, UIClassSelectButton.SelectedClass);
     }
 }

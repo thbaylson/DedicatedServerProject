@@ -45,18 +45,19 @@ public class ClientCharacterManager : MonoBehaviour
     [ContextMenu(nameof(SendCreateRequest))]
     public async void SendCreateRequest()
     {
-        await CreateCharacter(_createRequest.CharacterName, _createRequest.ClassName);
+        // This is basically deprecated code now. The UI makes this obsolete
+        await CreateCharacter(_createRequest.CharacterName, CharacterClass.Warrior);
     }
 
-    public async Task CreateCharacter(string characterName, string className)
+    public async Task CreateCharacter(string characterName, CharacterClass characterClass)
     {
         var request = new CreateRequest
         {
             CharacterName = characterName,
-            ClassName = className
+            ClassName = characterClass.ToString()
         };
 
-        Debug.Log("Sending CreateRequest");
+        Debug.Log($"Sending CreateRequest: CharacterName {request.CharacterName}; ClassName: {request.ClassName}");
         var result = await CloudCodeService.Instance.CallModuleEndpointAsync<CreateResult>(
             "ExtractCloud",
             "CreateCharacter",
