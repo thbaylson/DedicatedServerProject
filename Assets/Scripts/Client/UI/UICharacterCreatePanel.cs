@@ -2,15 +2,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UICharacterCreatePanel : MonoBehaviour
+namespace Client.UI
 {
-    [SerializeField] Button _createButton;
-    [SerializeField] TMP_InputField _nameInputField;
-
-    void Awake() => _createButton.onClick.AddListener(CreateCharacter);
-
-    async void CreateCharacter()
+    public class UICharacterCreatePanel : MonoBehaviour
     {
-        await ClientCharacterManager.Instance.CreateCharacter(_nameInputField.text, UIClassSelectButton.SelectedClass);
+        [SerializeField] Button _createButton;
+        [SerializeField] TMP_InputField _nameInputField;
+
+        void Awake() => _createButton.onClick.AddListener(CreateCharacter);
+
+        async void CreateCharacter()
+        {
+            await ClientCharacterManager.Instance.CreateCharacter(_nameInputField.text, UIClassSelectButton.SelectedClass);
+        }
     }
 }

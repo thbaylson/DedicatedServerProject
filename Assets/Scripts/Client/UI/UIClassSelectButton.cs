@@ -1,40 +1,44 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Note: The course file lists a namespace for this class only. May want to add that?
-public class UIClassSelectButton : MonoBehaviour
+namespace Client.UI
 {
-    public static CharacterClass SelectedClass;
-
-    public CharacterClass CharacterClass;
-    Toggle _toggle;
-    [SerializeField] TMP_Text _text;
-    [SerializeField] Image _selectedBadge;
-
-    private void OnValidate()
+    public class UIClassSelectButton : MonoBehaviour
     {
-        _text = GetComponentInChildren<TMP_Text>();
-        _text.text = CharacterClass.ToString();
-        gameObject.name = "Class Button " + CharacterClass;
-    }
+        public static CharacterClass SelectedClass;
 
-    private void Awake()
-    {
-        _toggle = GetComponent<Toggle>();
-        _toggle.onValueChanged.AddListener(HandleClick);
-    }
+        public CharacterClass CharacterClass;
+        Toggle _toggle;
+        [SerializeField] TMP_Text _text;
+        [SerializeField] Image _selectedBadge;
+        [SerializeField] Image _classIcon;
 
-    void HandleClick(bool arg0)
-    {
-        if (arg0)
+        private void OnValidate()
         {
-            SelectedClass = CharacterClass;
+            _text = GetComponentInChildren<TMP_Text>();
+            _text.text = CharacterClass.ToString();
+            _classIcon.sprite = FindFirstObjectByType<PrefabsManager>().GetSprite(CharacterClass.ToString());
+            gameObject.name = "Class Button " + CharacterClass;
         }
 
-        _selectedBadge.color = arg0 ? Color.green : Color.white;
+        private void Awake()
+        {
+            _toggle = GetComponent<Toggle>();
+            _toggle.onValueChanged.AddListener(HandleClick);
+        }
+
+        void HandleClick(bool arg0)
+        {
+            if (arg0)
+            {
+                SelectedClass = CharacterClass;
+            }
+
+            _selectedBadge.color = arg0 ? Color.green : Color.white;
+        }
     }
 }
 
