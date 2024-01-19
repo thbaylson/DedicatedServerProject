@@ -149,6 +149,7 @@ GameObject:
   - component: {fileID: 5359312476202625299}
   - component: {fileID: 8330362664163779338}
   - component: {fileID: 6866466831243817545}
+  - component: {fileID: 4483003229266725427}
   m_Layer: 5
   m_Name: Class Button Mage
   m_TagString: Untagged
@@ -278,6 +279,21 @@ MonoBehaviour:
   _text: {fileID: 6993991906707425840}
   _selectedBadge: {fileID: 4253115761165275589}
   _classIcon: {fileID: 5359312476202625299}
+--- !u!114 &4483003229266725427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5743473566258938077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 2, y: 2}
+  m_UseGraphicAlpha: 1
 --- !u!1 &6682903349046887262
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,6 +305,7 @@ GameObject:
   - component: {fileID: 244023749182173871}
   - component: {fileID: 4169179550214942048}
   - component: {fileID: 4253115761165275589}
+  - component: {fileID: 1363847690066682143}
   m_Layer: 5
   m_Name: Badge
   m_TagString: Untagged
@@ -354,3 +371,18 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1363847690066682143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6682903349046887262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
+  m_EffectDistance: {x: 2, y: 2}
+  m_UseGraphicAlpha: 1
