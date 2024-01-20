@@ -23,7 +23,7 @@ namespace Client.UI
             GetComponent<Button>().onClick.AddListener(DeleteCharacter);
         }
 
-        private void SelectCharacter() => Debug.Log("Start log in.");
+        private void SelectCharacter() => ClientNetworkManager.Instance.ConnectToServer(_characterName);
 
         private void DeleteCharacter() => ClientCharacterManager.Instance.DeleteCharacter(_characterName);
 
