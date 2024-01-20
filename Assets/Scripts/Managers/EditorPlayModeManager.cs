@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Unity.Multiplayer.Playmode;
 using UnityEngine;
@@ -23,24 +21,26 @@ public class EditorPlayModeManager : MonoBehaviour
         }
 
         // Check to see if the "player" (ie: user) is the Server
-        var server = CurrentPlayer.ReadOnlyTags().Contains("Server");
-        if(server)
+        bool isServer = CurrentPlayer.ReadOnlyTags().Contains("Server");
+        if(isServer)
         {
             if (!SceneManager.GetSceneByName("Server").isLoaded)
             {
                 SceneManager.LoadScene("Server", LoadSceneMode.Additive);
+                Debug.Log("Loaded Server Scene");
             }
 
             return;
         }
 
         // Check to see if the "player" (ie: user) is a Client
-        var client = CurrentPlayer.ReadOnlyTags().Contains("Client");
-        if(client)
+        bool isClient = CurrentPlayer.ReadOnlyTags().Contains("Client");
+        if(isClient)
         {
             if (!SceneManager.GetSceneByName("Client").isLoaded)
             {
                 SceneManager.LoadScene("Client", LoadSceneMode.Additive);
+                Debug.Log("Loaded Client Scene");
             }
 
             return;
