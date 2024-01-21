@@ -13,9 +13,11 @@ namespace Client
 
         private void Awake() => Instance = this;
 
-        public void ConnectToServer(string characterName)
+        public async void ConnectToServer(string characterName)
         {
             var playerId = AuthenticationService.Instance.PlayerId;
+            await AuthenticationService.Instance.UpdatePlayerNameAsync("Player1");
+
             var playerName = AuthenticationService.Instance.PlayerName;
             Debug.LogWarning($"Sending Connection Data: {playerId},{characterName}  name: {playerName}");
             
