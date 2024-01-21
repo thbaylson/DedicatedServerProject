@@ -18,19 +18,22 @@ namespace Client.UI
             _deleteButton.onClick.AddListener(DeleteCharacter);
         }
 
-        private void Start()
+        private void SelectCharacter()
         {
-            GetComponent<Button>().onClick.AddListener(DeleteCharacter);
+            Debug.Log($"Character {_characterName} Selected");
+            ClientNetworkManager.Instance.ConnectToServer(_characterName);
         }
 
-        private void SelectCharacter() => Debug.Log("Start log in.");
-
-        private void DeleteCharacter() => ClientCharacterManager.Instance.DeleteCharacter(_characterName);
+        private void DeleteCharacter()
+        {
+            Debug.Log($"Character {_characterName} Deleted");
+            ClientCharacterManager.Instance.DeleteCharacter(_characterName);
+        }
 
         public void Bind(PersistedCharacterData data)
         {
             _characterName = data.Name;
-            GetComponentInChildren<TMP_Text>().SetText($"{data.Name} - {data.Class} ({data.Experience})");
+            _characterNameText.SetText($"{data.Name} - {data.Class} ({data.Experience})");
             _characterClassIcon.sprite = PrefabsManager.Instance.GetSprite(data.Class);
         }
 
