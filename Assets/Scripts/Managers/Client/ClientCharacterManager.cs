@@ -1,4 +1,5 @@
 using Client.UI;
+using Cloud;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,7 +37,7 @@ public class ClientCharacterManager : MonoBehaviour
             Debug.Log("Failed to login");
         }
 
-        PersistedCharacterDatas = await LoadAllCharactersOnClient();
+        PersistedCharacterDatas = await PlayerSaveWrapper.LoadAllCharactersOnClient();
         
         // Refresh the UI element. This logic will be moved in the future
         FindFirstObjectByType<UICharacterSelectPanel>().Bind(PersistedCharacterDatas);
@@ -52,22 +53,7 @@ public class ClientCharacterManager : MonoBehaviour
 
     public async Task CreateCharacter(string characterName, CharacterClass characterClass)
     {
-        var request = new CreateRequest
-        {
-            CharacterName = characterName,
-            ClassName = characterClass.ToString()
-        };
-
-        Debug.Log($"Sending CreateRequest: CharacterName {request.CharacterName}; ClassName: {request.ClassName}");
-        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<CreateResult>(
-            "ExtractCloud",
-            "CreateCharacter",
-            new Dictionary<string, object>
-            {
-                {"request", request }
-            });
-
-        Debug.Log($"Received CreateResult: {result.Success}; {result.Message}");
+        CreateResult result = await PlayerSaveWrapper.CreateCharacterFromClient(characterName, characterClass);
         if (result.Success)
         {
             PersistedCharacterDatas.Add(result.Data);
@@ -78,27 +64,9 @@ public class ClientCharacterManager : MonoBehaviour
         }
     }
 
-    public async Task<List<PersistedCharacterData>> LoadAllCharactersOnClient()
-    {
-        var playerId = AuthenticationService.Instance.PlayerId;
-        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<List<PersistedCharacterData>>(
-            "ExtractCloud",
-            "LoadAllCharactersOnClient");
-
-        return result;
-    }
-
     public async void DeleteCharacter(string characterName)
     {
-        // Delete the character from CloudCode
-        var result = await CloudCodeService.Instance.CallModuleEndpointAsync<bool>(
-            "ExtractCloud",
-            "DeleteCharacter",
-            new Dictionary<string, object>
-            {
-                {"characterName", characterName }
-            });
-
+        bool result = await PlayerSaveWrapper.DeleteCharacterFromClient(characterName);
         // If the character was successfully deleted, remove them from the list
         if (result)
         {
