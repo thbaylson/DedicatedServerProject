@@ -1,5 +1,7 @@
+using Cloud;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 // This will be shared between Client and Server
 public class Player : NetworkBehaviour
@@ -8,6 +10,8 @@ public class Player : NetworkBehaviour
     public NetworkVariable<FixedString32Bytes> PlayerId;
     public NetworkVariable<FixedString32Bytes> PlayerName;
     public NetworkVariable<FixedString32Bytes> CharacterName;
+    
+    private Character _character;
 
     private void Awake()
     {
@@ -25,7 +29,16 @@ public class Player : NetworkBehaviour
             PlayerId.Value = ServerPlayerManager.GetPlayerId(OwnerClientId);
             PlayerName.Value = ServerPlayerManager.GetPlayerName(OwnerClientId);
             CharacterName.Value = ServerPlayerManager.GetCharacterName(OwnerClientId);
+
+            StartCoroutine(LoadCharacterAsync());
         }
         gameObject.name = $"({PlayerName.Value}) {CharacterName.Value}";
+    }
+
+    private async Awaitable LoadCharacterAsync()
+    {
+        var persistedCharacterData = await PlayerSaveWrapper.LoadCharacterOnServer(PlayerId.Value.Value, CharacterName.Value.Value);
+        _character = await ServerCharacterManager.SpawnCharacterFromCloudData(persistedCharacterData, this);
+        Debug.Log($"{persistedCharacterData.Name} {persistedCharacterData.Class}");
     }
 }

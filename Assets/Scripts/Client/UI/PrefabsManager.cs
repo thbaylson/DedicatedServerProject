@@ -6,6 +6,7 @@ namespace Client.UI
     public class PrefabsManager : MonoBehaviour
     {
         public static PrefabsManager Instance {  get; private set; }
+        public Character CharacterPrefab;
         [SerializeField] List<Sprite> _sprites;
 
         private void Awake() => Instance = this;

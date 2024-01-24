@@ -101,6 +101,27 @@ public class MyModule
         return deleteResult.StatusCode == System.Net.HttpStatusCode.OK;
     }
 
+    [CloudCodeFunction("LoadCharacterOnServer")]
+    public async Task<PersistedCharacterData> LoadCharacterOnServer(IExecutionContext ctx, IGameApiClient gameApiClient, string playerId, string characterName)
+    {
+        var response = await gameApiClient.CloudSaveData.GetProtectedItemsAsync(
+            ctx, ctx.ServiceToken, ctx.ProjectId, playerId, new List<string>() { characterName });
+
+        if(response.Data.Results.Count == 0)
+        {
+            throw new Exception($"No player returned searching player {playerId} for {characterName}");
+        }
+
+        var json = response.Data.Results[0].Value.ToString();
+        var character = JsonConvert.DeserializeObject<PersistedCharacterData>(json);
+        if(character == null)
+        {
+            throw new Exception($"Invalid Player data, unable to deserialize{Environment.NewLine}{response.Data.Results[0].Value}");
+        }
+
+        return character;
+    }
+
     /// <summary>
     /// Gets character data for a given character's name.
     /// </summary>
