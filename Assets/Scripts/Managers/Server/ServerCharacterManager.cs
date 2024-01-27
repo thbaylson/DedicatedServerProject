@@ -11,7 +11,8 @@ public static class ServerCharacterManager
 
     public static async Task<Character> SpawnCharacterFromCloudData(PersistedCharacterData persistedCharacterData, Player player)
     {
-        var character = Object.Instantiate(PrefabsManager.Instance.CharacterPrefab);
+        var entryPoint = GameObject.FindWithTag("EntryPoint").transform;
+        var character = Object.Instantiate(PrefabsManager.Instance.CharacterPrefab, entryPoint.position, entryPoint.rotation);
         character.gameObject.name = $"Character {persistedCharacterData.Name}";
         character.NetworkObject.SpawnWithOwnership(player.OwnerClientId);
 
