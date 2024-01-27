@@ -1,7 +1,9 @@
 using Cloud;
+using System.Collections;
 using Unity.Collections;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 // This will be shared between Client and Server
 public class Player : NetworkBehaviour
@@ -58,5 +60,24 @@ public class Player : NetworkBehaviour
     private void ClickedNavMeshServerRpc(Vector3 navHitPosition)
     {
         _character.SetDestinationOnNavMesh(navHitPosition);
+    }
+
+    public void LeaveServer() => StartCoroutine(SaveThenLeave());
+
+    private IEnumerator SaveThenLeave()
+    {
+        // Save Here
+        yield return null;
+        Debug.LogWarning("Save Complete");
+
+        LeaveServerClientRpc();
+        Destroy(_character.gameObject);
+    }
+
+    [ClientRpc]
+    private void LeaveServerClientRpc()
+    {
+        NetworkManager.Singleton.Shutdown();
+        SceneManager.LoadScene("Client");
     }
 }
