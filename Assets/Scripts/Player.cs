@@ -1,4 +1,5 @@
 using Cloud;
+using System;
 using System.Collections;
 using Unity.Collections;
 using Unity.Netcode;
@@ -47,13 +48,49 @@ public class Player : NetworkBehaviour
         gameObject.name = $"({PlayerName.Value}) {CharacterName.Value}";
     }
 
-    private async Awaitable LoadCharacterAsync()
+    public override void OnNetworkDespawn()
     {
-        var persistedCharacterData = await PlayerSaveWrapper.LoadCharacterOnServer(PlayerId.Value.Value, CharacterName.Value.Value);
-        _character = await ServerCharacterManager.SpawnCharacterFromCloudData(persistedCharacterData, this);
-        Debug.Log($"{persistedCharacterData.Name} {persistedCharacterData.Class}");
+        if(IsServer && _character != null)
+        {
+            // This gives ownership of the object to the server.
+            _character.NetworkObject.ChangeOwnership(0);
+        }
     }
 
+    private async Awaitable LoadCharacterAsync()
+    {
+        if (RetakeExistingCharacter())
+        {
+            return;
+        }
+
+        var persistedCharacterData = await PlayerSaveWrapper.LoadCharacterOnServer(PlayerId.Value.Value, CharacterName.Value.Value);
+        _character = await ServerCharacterManager.SpawnCharacterFromCloudData(persistedCharacterData, this);
+        Debug.Log($"Loaded {persistedCharacterData.Name} {persistedCharacterData.Class}");
+    }
+
+    /// <summary>
+    /// Attempts to allow players to retake control of a character that may be left on the server.
+    /// TODO: This one method is really doing two different things. This logic should probably be split.
+    /// </summary>
+    /// <returns>True if the retake was successful, otherwise returns false.</returns>
+    private bool RetakeExistingCharacter()
+    {
+        bool result = false;
+
+        // Check to see if the character object is still hanging around on the server.
+        var existing = ServerCharacterManager.GetExistingCharacter(PlayerId.Value.Value);
+        if(existing != null)
+        {
+            _character = existing;
+            _character.NetworkObject.ChangeOwnership(OwnerClientId);
+            result = true;
+        }
+
+        return result;
+    }
+
+    // Using an expression body to call the RPC for the sake of abstaction
     public void ClickedNavMesh(Vector3 navHitPosition) => ClickedNavMeshServerRpc(navHitPosition);
 
     [ServerRpc]
