@@ -13,7 +13,8 @@ public static class ServerCharacterManager
     {
         var entryPoint = GameObject.FindWithTag("EntryPoint").transform;
         var character = Object.Instantiate(PrefabsManager.Instance.CharacterPrefab, entryPoint.position, entryPoint.rotation);
-        character.gameObject.name = $"Character {persistedCharacterData.Name}";
+        character.Bind(persistedCharacterData);
+
         character.NetworkObject.SpawnWithOwnership(player.OwnerClientId);
 
         PlayerCharacters[player.PlayerId.Value.Value] = character;
