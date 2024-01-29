@@ -16,7 +16,14 @@ namespace Client
         public async void ConnectToServer(string characterName)
         {
             var playerId = AuthenticationService.Instance.PlayerId;
-            await AuthenticationService.Instance.UpdatePlayerNameAsync("Player1");
+
+            // This check may seem logically unimportant, but it actually prevents Error 429 "Too Many Requests."
+            // Setting the player name has a default rate limit of 3 requests per minute. For completeness,
+            // Getting the player name has a rate limit of 6 requests per minute. TODO: Should probably cache this.
+            if (string.IsNullOrEmpty(AuthenticationService.Instance.PlayerName))
+            {
+                await AuthenticationService.Instance.UpdatePlayerNameAsync("Player1");
+            }
 
             var playerName = AuthenticationService.Instance.PlayerName;
             Debug.LogWarning($"Sending Connection Data: {playerId},{characterName}  name: {playerName}");
