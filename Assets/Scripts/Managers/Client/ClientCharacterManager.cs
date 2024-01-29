@@ -19,6 +19,15 @@ public class ClientCharacterManager : MonoBehaviour
     async void Start()
     {
         await UnityServices.InitializeAsync();
+
+        // If we are loading back into this from a level, then skip sign-in logic. We're already signed in
+        if (AuthenticationService.Instance.IsAuthorized)
+        {
+            Debug.LogWarning("Already Authorized.");
+            await LoadAllCharactersOnClient();
+            return;
+        }
+
         try
         {
             await AuthenticationService.Instance.SignInWithUsernamePasswordAsync("Player1", "Test1234!");
@@ -37,10 +46,7 @@ public class ClientCharacterManager : MonoBehaviour
             Debug.Log("Failed to login");
         }
 
-        PersistedCharacterDatas = await PlayerSaveWrapper.LoadAllCharactersOnClient();
-        
-        // Refresh the UI element. This logic will be moved in the future
-        FindFirstObjectByType<UICharacterSelectPanel>().Bind(PersistedCharacterDatas);
+        await LoadAllCharactersOnClient();
     }
 
     // This adds custom functionality to the context menu of this component within the editor
@@ -74,6 +80,12 @@ public class ClientCharacterManager : MonoBehaviour
         }
 
         // Refresh the UI element. This logic will be moved in the future
+        FindFirstObjectByType<UICharacterSelectPanel>().Bind(PersistedCharacterDatas);
+    }
+
+    private async Task LoadAllCharactersOnClient()
+    {
+        PersistedCharacterDatas = await PlayerSaveWrapper.LoadAllCharactersOnClient();
         FindFirstObjectByType<UICharacterSelectPanel>().Bind(PersistedCharacterDatas);
     }
 }
