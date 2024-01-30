@@ -104,7 +104,7 @@ public class Player : NetworkBehaviour
     private IEnumerator SaveThenLeave()
     {
         // Save Here
-        yield return null;
+        yield return PlayerSaveWrapper.SaveCharacterOnServer(_character.Data);
         Debug.LogWarning("Save Complete");
 
         LeaveServerClientRpc();
