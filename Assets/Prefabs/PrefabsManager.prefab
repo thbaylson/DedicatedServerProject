@@ -45,6 +45,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CharacterPrefab: {fileID: 7823754390530752624, guid: 53f236f8ab09e2b498286c8009f3112a, type: 3}
+  Items:
+  - {fileID: 11400000, guid: b08070a95d740b64099bb4d38dbda9c8, type: 2}
+  - {fileID: 11400000, guid: ca367bb2c82ee3a42bcba7292fe2bd62, type: 2}
+  - {fileID: 11400000, guid: 259e1673932e9f4489a2ea5761b776dc, type: 2}
+  - {fileID: 11400000, guid: 30d090b6bc0784a4bac500c0551955ca, type: 2}
   _sprites:
   - {fileID: -658720111, guid: ad176af5f34fb294394e7fd48efe58a9, type: 3}
   - {fileID: 671262303, guid: ad176af5f34fb294394e7fd48efe58a9, type: 3}

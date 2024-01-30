@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Shared;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Client.UI
@@ -7,7 +8,8 @@ namespace Client.UI
     {
         public static PrefabsManager Instance {  get; private set; }
         public Character CharacterPrefab;
-        [SerializeField] List<Sprite> _sprites;
+        public List<ItemDefinition> Items;
+        [SerializeField] private List<Sprite> _sprites;
 
         private void Awake() => Instance = this;
 
