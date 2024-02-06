@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 7823754390530752624}
   - component: {fileID: 2833076546757757268}
   - component: {fileID: 1904962249827784879}
+  - component: {fileID: 8832283514644364666}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -126,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 4265389467
+  GlobalObjectIdHash: 1079821565
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -211,6 +212,10 @@ MonoBehaviour:
         byte0027: 0
         byte0028: 0
         byte0029: 0
+  CharacterClass:
+    m_InternalValue: 0
+  Experience:
+    m_InternalValue: 0
   _navMeshAgent: {fileID: 2833076546757757268}
 --- !u!195 &2833076546757757268
 NavMeshAgent:
@@ -261,3 +266,17 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &8832283514644364666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8143227420363638072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bac4acdd78f891444a2238ef1e55c796, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Items: []
+  _character: {fileID: 7823754390530752624}

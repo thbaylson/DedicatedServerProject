@@ -100,6 +100,20 @@ namespace Shared
             _character.SetDestinationOnNavMesh(navHitPosition);
         }
 
+        // "...we can't send the network object..." - Why not? Where does this limitation come from?
+        public void ClickedClientItem(WorldItem worldItem) => ClickedClientItemServerRpc(worldItem.NetworkObject.NetworkObjectId);
+
+        [ServerRpc]
+        public void ClickedClientItemServerRpc(ulong worldItemNetworkObjectId)
+        {
+            // Why do we pass in an Id to fetch the object reference when we could've just passed in the object reference?
+            var item = NetworkManager.SpawnManager.SpawnedObjects[worldItemNetworkObjectId].GetComponent<WorldItem>();
+            if(item != null)
+            {
+                _character.GetComponent<ItemController>().ClickedWorldItemOnServer(item);
+            }
+        }
+
         public void LeaveServer() => StartCoroutine(SaveThenLeave());
 
         private IEnumerator SaveThenLeave()
