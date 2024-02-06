@@ -45,6 +45,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CharacterPrefab: {fileID: 7823754390530752624, guid: 53f236f8ab09e2b498286c8009f3112a, type: 3}
+  WorldItemPrefab: {fileID: 4966987270312296589, guid: c8c0b1fc21fd370479ddb34e45b4c467, type: 3}
   Items:
   - {fileID: 11400000, guid: b08070a95d740b64099bb4d38dbda9c8, type: 2}
   - {fileID: 11400000, guid: ca367bb2c82ee3a42bcba7292fe2bd62, type: 2}

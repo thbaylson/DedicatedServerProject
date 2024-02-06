@@ -8,7 +8,9 @@ namespace Client.UI
     {
         public static PrefabsManager Instance {  get; private set; }
         public Character CharacterPrefab;
+        public WorldItem WorldItemPrefab;
         public List<ItemDefinition> Items;
+
         [SerializeField] private List<Sprite> _sprites;
 
         private void Awake() => Instance = this;
