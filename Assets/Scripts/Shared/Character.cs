@@ -17,10 +17,12 @@ namespace Shared
         public PersistedCharacterData Data { get; private set; }
 
         [SerializeField] private NavMeshAgent _navMeshAgent;
+        [SerializeField] private ItemController _itemsController;
 
         private void OnValidate()
         {
             _navMeshAgent = GetComponent<NavMeshAgent>();
+            _itemsController = GetComponent<ItemController>();
         }
 
         private void Awake()
@@ -49,7 +51,7 @@ namespace Shared
         }
 
         /// <summary>
-        /// This is a mapper. It maps PersistedCharacterData to Character
+        /// This is a mapper. It maps PersistedCharacterData to Character. This should only run on the server.
         /// </summary>
         /// <param name="persistedCharacterData"></param>
         public void Bind(PersistedCharacterData persistedCharacterData)
@@ -60,6 +62,8 @@ namespace Shared
 
             Enum.TryParse<CharacterClass>(persistedCharacterData.Class, out var characterClass);
             CharacterClass = new NetworkVariable<CharacterClass>(characterClass);
+
+            _itemsController.InitializeItemsFromData();
         }
 
         public void AddExperience(long amountToAdd) => AddExperienceServerRpc(amountToAdd);

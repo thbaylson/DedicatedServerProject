@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 [Serializable]
 public class PersistedCharacterData
@@ -10,4 +7,5 @@ public class PersistedCharacterData
     public string Name;
     public string Class;
     public long Experience;
+    public byte[] ItemIds = new byte[10];
 }

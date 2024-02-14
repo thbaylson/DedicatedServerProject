@@ -37,9 +37,50 @@ namespace Shared
             }
 
             Debug.Log($"Searching for {itemInstance.DefinitionId}");
+            PlaceItemInSlot(firstEmptySlot, itemInstance);
+        }
 
-            itemInstance.CharacterName = _character.Name.Value.Value;
-            Items[firstEmptySlot] = itemInstance;
+        public void InitializeItemsFromData()
+        {
+            Debug.Log($"InitializeItemsFromData for Inventory of {OwnerClientId}");
+            // TODO: Player inventory is currently hardcoded to 10. Both here and in ExtractCloud. This needs to not be hardcoded in the future.
+            for(byte i = 0; i < 10; i++)
+            {
+                if(_character.Data.ItemIds.Length < i + 1)
+                {
+                    Debug.LogError("Data size doesn't match for inventory");
+                    break;
+                }
+
+                var itemId = _character.Data.ItemIds[i];
+
+                if(itemId > 0)
+                {
+                    var itemInstance = ServerItemManager.Instance.CreateServerItem(itemId);
+                    itemInstance.SlotIndex = i;
+                    itemInstance.CharacterName = _character.Name.Value.Value;
+                    Items[i] = itemInstance;
+                }
+                else
+                {
+                    Items[i] = null;
+                }
+            }
+        }
+
+        private void PlaceItemInSlot(byte slotIndex, ServerItemInstance itemInstance)
+        {
+            Items[slotIndex] = itemInstance;
+            if(itemInstance != null)
+            {
+                _character.Data.ItemIds[slotIndex] = itemInstance.DefinitionId;
+                itemInstance.SlotIndex = slotIndex;
+                itemInstance.CharacterName = _character.Name.Value.Value;
+            }
+            else
+            {
+                _character.Data.ItemIds[slotIndex] = 0;
+            }
         }
 
         // This is a fun way to functionally return 2 data points while technically only returning 1 boolean.

@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1079821565
+  GlobalObjectIdHash: 4265389467
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -217,6 +217,7 @@ MonoBehaviour:
   Experience:
     m_InternalValue: 0
   _navMeshAgent: {fileID: 2833076546757757268}
+  _itemsController: {fileID: 8832283514644364666}
 --- !u!195 &2833076546757757268
 NavMeshAgent:
   m_ObjectHideFlags: 0
