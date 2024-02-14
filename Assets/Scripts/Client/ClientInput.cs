@@ -1,3 +1,4 @@
+using Shared;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
@@ -21,6 +22,13 @@ namespace Client
                 if(Physics.Raycast(ray, out var hitInfo))
                 {
                     Debug.Log($"ScreenToPointRay raycast hit {hitInfo.collider.name}");
+
+                    if(hitInfo.collider.TryGetComponent<WorldItem>(out var worldItem))
+                    {
+                        Player.LocalPlayer.ClickedClientItem(worldItem);
+                        return;
+                    }
+
                     // Movement will be handled via right clicks
                     if(rightClick)
                     {

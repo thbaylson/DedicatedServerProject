@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Services.Authentication;
+using Unity.Services.Authentication.Server;
 using Unity.Services.CloudCode;
 using UnityEngine;
 
@@ -71,6 +73,29 @@ namespace Cloud
                 {
                 {"characterName", characterName }
                 });
+        }
+
+        public static async Task<CreateResult> SaveCharacterOnServer(PersistedCharacterData characterData)
+        {
+            Debug.Log($"Authorization: {ServerAuthenticationService.Instance.IsAuthorized}");
+            var result = await CloudCodeService.Instance.CallModuleEndpointAsync<CreateResult>(
+                "ExtractCloud",
+                "SaveCharacterOnServer",
+                new Dictionary<string, object>
+                {
+                    {"data", characterData }
+                });
+
+            if (!result.Success)
+            {
+                Debug.LogError($"Character {characterData.Name} failed to save.{Environment.NewLine}{result.Message}");
+            }
+            else
+            {
+                Debug.Log($"Saved character {characterData.Name}");
+            }
+
+            return result;
         }
     }
 }

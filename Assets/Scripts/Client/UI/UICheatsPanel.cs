@@ -1,3 +1,4 @@
+using Shared;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,10 +8,10 @@ namespace Client.UI
 {
     public class UICheatsPanel : MonoBehaviour
     {
+        public long experienceAmountToAdd = 10;
+
         [SerializeField] Button _disconnectButton;
         [SerializeField] Button _addExperienceButton;
-
-        private float experienceToAdd = 10f;
 
         private void Awake()
         {
@@ -26,7 +27,8 @@ namespace Client.UI
 
         private void AddExperience()
         {
-            Debug.Log($"{experienceToAdd} Experience Added");
+            Character.LocalCharacter.AddExperience(experienceAmountToAdd);
+            Debug.Log($"{experienceAmountToAdd} Experience Added");
         }
     }
 }
