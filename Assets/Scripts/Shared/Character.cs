@@ -1,3 +1,4 @@
+using Client.UI;
 using System;
 using Unity.Collections;
 using Unity.Netcode;
@@ -42,6 +43,12 @@ namespace Shared
             if (IsOwner)
             {
                 LocalCharacter = this;
+                // This probably won't stay here, but it's good enough for now. This keeps UI logic off of
+                // the server, which is always a good idea. In a future lecture we will handle this in a different way.
+                if (IsClient)
+                {
+                    UICharacterInfoPanel.Instance.Bind(this);
+                }
             }
         }
 
