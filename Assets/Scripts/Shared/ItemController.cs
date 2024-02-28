@@ -1,3 +1,4 @@
+using Client.UI;
 using Server;
 using Unity.Netcode;
 using UnityEngine;
@@ -33,6 +34,11 @@ namespace Shared
                 for(var i = 0; i < ItemDefinitionInSlots.Count; i++)
                 {
                     Debug.Log($"{i} = {ItemDefinitionInSlots[i]}");
+                }
+
+                if (IsOwner)
+                {
+                    UIInventoryPanel.Instance.Bind(this);
                 }
             }
         }
