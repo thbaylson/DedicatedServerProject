@@ -7,6 +7,7 @@ namespace Shared
     public class ItemController : NetworkBehaviour
     {
         public ServerItemInstance[] Items;
+        public NetworkList<byte> ItemDefinitionInSlots;
 
         [SerializeField] private Character _character;
 
@@ -16,6 +17,24 @@ namespace Shared
         private void Awake()
         {
             Items = new ServerItemInstance[10];
+            ItemDefinitionInSlots = new NetworkList<byte>();
+        }
+
+        private void Start()
+        {
+            if (IsServer)
+            {
+                SyncItemsToClient();
+            }
+
+            if (IsClient)
+            {
+                ItemDefinitionInSlots.OnListChanged += (eventParam) => Debug.Log($"Item Changed {eventParam.Index} = {eventParam.Value}");
+                for(var i = 0; i < ItemDefinitionInSlots.Count; i++)
+                {
+                    Debug.Log($"{i} = {ItemDefinitionInSlots[i]}");
+                }
+            }
         }
 
         public void ClickedWorldItemOnServer(WorldItem item)
@@ -64,6 +83,27 @@ namespace Shared
                 else
                 {
                     Items[i] = null;
+                }
+            }
+        }
+
+        private void SyncItemsToClient()
+        {
+            for(int i = 0; i < Items.Length; i++)
+            {
+                var definitionId = Items[i]?.DefinitionId ?? 0;
+                
+                // If we haven't sync'd yet, then our ItemDefinitionInSlots list is empty and needs to be populated
+                if(ItemDefinitionInSlots.Count < i + 1)
+                {
+                    // ItemDefinitionInSlots[i] = Items[i]
+                    ItemDefinitionInSlots.Add(definitionId);
+                }
+                // If we have sync'd, then make sure our item lists haven't gotten out of sync
+                else if(ItemDefinitionInSlots[i] != definitionId)
+                {
+                    ItemDefinitionInSlots[i] = definitionId;
+                    Debug.Log($"Updated item definition in slot {i} to {definitionId}");
                 }
             }
         }
